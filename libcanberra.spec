@@ -1,6 +1,6 @@
 Name: libcanberra
 Version: 0.22
-Release: 1%{?dist}
+Release: 3%{?dist}
 Summary: Portable Sound Event Library
 Group: System Environment/Libraries
 Source0: http://0pointer.de/lennart/projects/libcanberra/libcanberra-%{version}.tar.gz
@@ -19,6 +19,11 @@ BuildRequires: GConf2-devel
 BuildRequires: gettext-devel
 Requires: sound-theme-freedesktop
 Requires: pulseaudio-libs >= 0.9.15
+Patch0: 0001-pulse-fix-a-minor-race-with-sound-cancellation.patch
+Patch1: 0002-pulse-fix-finish-notification-for-cached-sample-play.patch
+Patch2: 0003-pulse-fix-use-after-free-in-stream_drain_cb.patch
+Patch3: use-tab-in-makefile.patch
+Patch4: 0001-pulse-don-try-to-reconnect-immediately-if-PA-is-dyin.patch
 
 %description
 A small and lightweight implementation of the XDG Sound Theme Specification
@@ -72,6 +77,11 @@ fi
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 %configure --disable-static --enable-pulse --enable-alsa --enable-null --enable-gstreamer --disable-oss --with-builtin=dso
@@ -127,6 +137,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vala/vapi/libcanberra.vapi
 
 %changelog
+* Tue Jan 20 2015 Wim Taymans <wtaymans@redhat.com> 0.22-3
+- fix killing pulseaudio process lead metacity consumes over 90% of CPU
+- Fixes rhbz#860576
+
+* Tue Jun 24 2014 Wim Taymans <wtaymans@redhat.com> 0.22-2
+- Fix various races
+- Related rhbz#921169
+
 * Tue Oct 20 2009 Lennart Poettering <lpoetter@redhat.com> 0.22-1
 - New version 0.22
 
